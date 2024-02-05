@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import User from "../models/user";
 import { setUser } from "../service/auth";
 
- async function handleUserSignup(req: Request, res: Response): Promise<void> {
+async function handleUserSignup(req: Request, res: Response): Promise<void> {
   const { name, email, password } = req.body;
   await User.create({
     name,
@@ -13,21 +13,20 @@ import { setUser } from "../service/auth";
   res.redirect("/");
 }
 
- async function handleUserLogin(req: Request, res: Response): Promise<void> {
+async function handleUserLogin(req: Request, res: Response): Promise<void> {
   const { email, password } = req.body;
   const user = await User.findOne({ email, password });
 
   if (!user) {
     res.render("login", {
-      error: "Invalid Username or Password",
+      error: "Invalid Login Credentials",
     });
     return;
   }
 
-  const sessionId = uuidv4();
-  setUser(sessionId, user);
-  res.cookie("uid", sessionId);
-  res.redirect("/");
+  const token = setUser(user);
+
+  res.json({token})
 }
 
 export { handleUserSignup, handleUserLogin };

@@ -14,11 +14,12 @@ export async function restrictToLoggedinUserOnly(
     res: Response,
     next: NextFunction
 ): Promise<void> {
-    const userUid = req.cookies?.uid;
+    const userUid = req.headers['authorization'];
 
     if (!userUid) return res.redirect("/login");
-
-    const user = getUser(userUid);
+    const token = userUid.split("Bearer ")[1];
+    
+    const user = getUser(token);
 
     if (!user) return res.redirect("/login");
 
@@ -31,9 +32,12 @@ export async function checkAuth(
     res: Response,
     next: NextFunction
 ): Promise<void> {
-    const userUid = req.cookies?.uid;
+    const userUid = req.headers?.['authorization'];
 
-    const user = getUser(userUid);
+    if (!userUid) return res.redirect("/login");
+    const token = userUid.split("Bearer ")[1];
+
+    const user = getUser(token);
 
     req.user = user as User;
     next();
