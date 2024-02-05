@@ -3,7 +3,7 @@ import {
   handleGenerateNewShortURL,
   handleGetAnalytics,
   handleRedirectURL,
-} from "../controllers/url.controller";
+} from "../controllers/url";
 
 const router = express.Router();
 

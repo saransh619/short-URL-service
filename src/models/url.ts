@@ -4,6 +4,7 @@ interface URL {
   shortId: string;
   redirectURL: string;
   visitHistory: { timestamp: number }[];
+  createdBy: mongoose.Types.ObjectId;
 }
 
 const urlSchema = new Schema<URL>(
@@ -18,6 +19,10 @@ const urlSchema = new Schema<URL>(
       required: true,
     },
     visitHistory: [{ timestamp: { type: Number } }],
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
   },
   { timestamps: true }
 );
