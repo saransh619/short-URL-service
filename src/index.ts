@@ -1,7 +1,7 @@
 import express from "express";
 import path from "path";
 import cookieParser from "cookie-parser";
-import { restrictToLoggedinUserOnly, checkAuth } from "./middlewares/auth";
+import { checkForAuthentication, restrictTo } from "./middlewares/auth";
 import { connectToMongoDB } from "./database/connect";
 import URL from "./models/url";
 import User from "./models/user"
@@ -31,10 +31,11 @@ app.set("views", path.resolve("src/views"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(checkForAuthentication);
 
-app.use("/url", restrictToLoggedinUserOnly, urlRoute);
+app.use("/url", restrictTo(["NORMAL", "ADMIN"]), urlRoute);
 app.use("/user", userRoute);
-app.use("/", checkAuth, staticRoute);
+app.use("/", staticRoute);
 
 app.get("/url/:shortId", async (req, res) => {
   const shortId = req.params.shortId;

@@ -11,8 +11,12 @@ function setUser(user: any) {
   return jwt.sign(
     {
       _id: user._id,
-      email: user.email
-    }, secretKey);
+      email: user.email,
+      name: user.name,
+      role: user.role
+    },
+    secretKey
+  );
 }
 
 function getUser(token: string) {

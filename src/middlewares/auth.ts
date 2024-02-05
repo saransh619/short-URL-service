@@ -9,36 +9,39 @@ declare module "express-serve-static-core" {
     }
 }
 
-export async function restrictToLoggedinUserOnly(
-    req: Request,
+function checkForAuthentication( req: Request,
     res: Response,
-    next: NextFunction
-): Promise<void> {
-    const userUid = req.headers['authorization'];
+    next: NextFunction){
+    const tokenCookie = req.cookies?.token;
+    req.user = null as any;
 
-    if (!userUid) return res.redirect("/login");
-    const token = userUid.split("Bearer ")[1];
-    
+    if(!tokenCookie) return next();
+
+    const token = tokenCookie;
     const user = getUser(token);
 
-    if (!user) return res.redirect("/login");
-
-    req.user = user as User;
-    next();
+    if (user !== null) {
+        req.user = user as User;
+    }
+    return next();
 }
 
-export async function checkAuth(
-    req: Request,
-    res: Response,
-    next: NextFunction
-): Promise<void> {
-    const userUid = req.headers?.['authorization'];
 
-    if (!userUid) return res.redirect("/login");
-    const token = userUid.split("Bearer ")[1];
+function restrictTo(roles: string[] = []) {
+    return function (req: Request, res: Response, next: NextFunction) {
+        // Check if req.user is defined and not null
+        if (req.user && req.user.role) {
+            const userRole = req.user.role;
 
-    const user = getUser(token);
+            if (!roles.includes(userRole)) {
+                return res.end("Unauthorized");
+            }
+        } else {
+            return res.end("Unauthorized");
+        }
 
-    req.user = user as User;
-    next();
+        return next();
+    };
 }
+
+export { checkForAuthentication, restrictTo};

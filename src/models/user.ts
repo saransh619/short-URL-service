@@ -4,6 +4,7 @@ interface User extends Document {
   name: string;
   email: string;
   password: string;
+  role: string;
 }
 
 const userSchema = new Schema<User>(
@@ -21,6 +22,11 @@ const userSchema = new Schema<User>(
       type: String,
       required: true,
     },
+    role: {
+      type: String,
+      required: true,
+      default: "NORMAL"
+    }
   },
   { timestamps: true }
 );
