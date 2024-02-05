@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import shortid from "shortid";
-import URLModel from "../models/url";
+import URLModel from "../models/url.model";
 
 export async function handleGenerateNewShortURL(req: Request, res: Response): Promise<void> {
   const body = req.body;
@@ -9,13 +9,11 @@ export async function handleGenerateNewShortURL(req: Request, res: Response): Pr
     return;
   }
 
-  const createdBy = req.user?._id; // Check if req.user is defined
   const shortID = shortid();
   await URLModel.create({
     shortId: shortID,
     redirectURL: body.url,
     visitHistory: [],
-    createdBy,
   });
 
   res.json({ id: shortID });
